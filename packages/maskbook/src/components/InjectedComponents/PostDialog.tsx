@@ -14,6 +14,7 @@ import {
     CircularProgress,
     DialogContent,
     DialogActions,
+    TextField,
 } from '@material-ui/core'
 import { CompositionEvent, MaskMessage } from '../../utils/messages'
 import { useStylesExtends, or } from '../custom-ui-helper'
@@ -47,6 +48,9 @@ import { PluginStage } from '../../plugins/types'
 import { Election2020MetadataReader } from '../../plugins/Election2020/helpers'
 import { COTM_MetadataReader } from '../../plugins/COTM/helpers'
 import { Flags } from '../../utils/flags'
+import { usePortalShadowRoot } from '../../utils/shadow-root/usePortalShadowRoot'
+import { DatePicker, LocalizationProvider } from '@material-ui/lab'
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns'
 
 const defaultTheme = {}
 
@@ -100,6 +104,16 @@ export function PostDialogUI(props: PostDialogUIProps) {
         else throw new Error('Not impled yet')
     }
 
+    const x = usePortalShadowRoot((container) => (
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+                onChange={() => {}}
+                renderInput={(props) => <TextField {...props} />}
+                value={new Date()}
+                DialogProps={{ container }}></DatePicker>
+        </LocalizationProvider>
+    ))
+
     if (!isTypedMessageText(props.postContent)) return <>Unsupported type to edit</>
     const metadataBadge = [...PluginUI].flatMap((plugin) =>
         Result.wrap(() => {
@@ -152,6 +166,7 @@ export function PostDialogUI(props: PostDialogUIProps) {
                 <InjectedDialog open={props.open} onClose={props.onCloseButtonClicked} title={t('post_dialog__title')}>
                     <DialogContent>
                         {metadataBadge}
+                        {x}
                         <InputBase
                             classes={{
                                 root: classes.MUIInputRoot,
